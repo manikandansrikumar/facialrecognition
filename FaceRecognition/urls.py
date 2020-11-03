@@ -16,6 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from Faceapp.views import FaceRecognitionView
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('detect/face/',FaceRecognitionView.as_view())
 ]
