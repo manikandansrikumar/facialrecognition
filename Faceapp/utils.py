@@ -42,24 +42,24 @@ from face_recognition.face_recognition_cli import scan_known_people, test_image
 #         else:
 #           print(f"Match Not found")
 
-directory = '/home/gokul/Documents/image-detection/known_faces/'
-def check_face(image_to_check, cpus=4, tolerance=0.6, show_distance=False):
-    for i in os.listdir(directory):
-        known_names, known_face_encodings = scan_known_people(image_files_in_folder(directory))
-
-        # Multi-core processing only supported on Python 3.4 or greater
-        if (sys.version_info < (3, 4)) and cpus != 1:
-            # click.echo("WARNING: Multi-processing support requires Python 3.4 or greater. Falling back to single-threaded processing!")
-            cpus = 1
-
-        # if os.path.isdir(image_to_check):
-        #     if cpus == 1:
-        #         [test_image(image_file, known_names, known_face_encodings, tolerance, show_distance) for image_file in image_files_in_folder(image_to_check)]
-        #     else:
-        #         process_images_in_process_pool(image_files_in_folder(image_to_check), known_names, known_face_encodings, cpus, tolerance, show_distance)
-        # else:
-        result = test_image(image_to_check, known_names, known_face_encodings, tolerance, show_distance)
-        return result
+# directory = '/home/gokul/Documents/image-detection/known_faces/'
+# def check_face(image_to_check, cpus=4, tolerance=0.6, show_distance=False):
+#     for i in os.listdir(directory):
+#         known_names, known_face_encodings = scan_known_people(image_files_in_folder(directory))
+#
+#         # Multi-core processing only supported on Python 3.4 or greater
+#         if (sys.version_info < (3, 4)) and cpus != 1:
+#             # click.echo("WARNING: Multi-processing support requires Python 3.4 or greater. Falling back to single-threaded processing!")
+#             cpus = 1
+#
+#         # if os.path.isdir(image_to_check):
+#         #     if cpus == 1:
+#         #         [test_image(image_file, known_names, known_face_encodings, tolerance, show_distance) for image_file in image_files_in_folder(image_to_check)]
+#         #     else:
+#         #         process_images_in_process_pool(image_files_in_folder(image_to_check), known_names, known_face_encodings, cpus, tolerance, show_distance)
+#         # else:
+#         result = test_image(image_to_check, known_names, known_face_encodings, tolerance, show_distance)
+#         return result
 
 # def test_image(image_to_check, known_names, known_face_encodings, tolerance=0.6, show_distance=False):
 #     unknown_image = face_recognition.load_image_file(image_to_check)
@@ -84,3 +84,4 @@ def check_face(image_to_check, cpus=4, tolerance=0.6, show_distance=False):
 #     if not unknown_encodings:
 #         # print out fact that no faces were found in image
 #         print_result(image_to_check, "no_persons_found", None, show_distance)
+
