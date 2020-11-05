@@ -37,14 +37,21 @@ class FaceRecognitionView(generics.GenericAPIView):
             mtcnn = MTCNN()
             detected_face = ''
             faces = mtcnn.detect_faces(unknown_image)
-            for face in faces:
-                x,y,z,a = face['box']
-                detected_face = unknown_image[y:y+a,x:x+z]
+            try:
+                for face in faces:
+                    x,y,z,a = face['box']
+                    detected_face = unknown_image[y:y+a,x:x+z]
                 print("detected_face first ",detected_face)
-            print("detected_face second ",detected_face)
-            if detected_face == '':
+            # print("detected_face second ",detected_face)
+            except:
                 return Response({'status': 'fail', 'message': 'Cant Detect Face'})
+            import numpy as np
+            if np.array(detected_face).size == 0 or detected_face =='':
+                return Response({'status': 'fail', 'message': 'Cant Detect Face'})
+            print("detected_face first ", detected_face)
+            print("1234567890",detected_face)
             locations = face_recognition.face_locations(detected_face, model='cnn')
+            print(locations)
             if not locations:
                 return Response({'status': 'fail', 'message': 'Cant Detect Face second'})
             encodings = face_recognition.face_encodings(detected_face, locations)
