@@ -4,6 +4,8 @@ import pickle
 
 import face_recognition
 import numpy as np
+from PIL import Image
+import cv2
 from django.shortcuts import render
 from mtcnn.mtcnn import MTCNN
 # Create your views here.
@@ -48,8 +50,8 @@ class FaceRecognitionView(generics.GenericAPIView):
             import numpy as np
             if np.array(detected_face).size == 0 or detected_face =='':
                 return Response({'status': 'fail', 'message': 'Cant Detect Face'})
-            print("detected_face first ", detected_face)
-            print("1234567890",detected_face)
+            # print("detected_face first ", detected_face)
+            # print("1234567890",detected_face)
             locations = face_recognition.face_locations(detected_face, model='cnn')
             print(locations)
             if not locations:
@@ -76,3 +78,49 @@ class FaceRecognitionView(generics.GenericAPIView):
             return Response({'status': 'fail', 'message': 'Something went wrong. Please try again later'},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+class SavePhotoView(generics.GenericAPIView):
+    permission_classes = (permissions.AllowAny,)
+    authentication_classes = []
+    def post(self,request):
+        try:
+            data = request.data
+            print(data)
+            logger.info('Request Payload {}'.format(data))
+            patient_photo = data.get('patient_photo')
+            patient_photo1 = data.get('patient_photo1')
+            patient_photo2 = data.get('patient_photo2')
+            patient_photo3 = data.get('patient_photo3')
+            patient_photo4 = data.get('patient_photo4')
+            patient_id = data.get('patient_id')
+            if not patient_id:
+                return Response({'status': 'fail', 'message': 'Please Choose a Patient'},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+            if not patient_photo or not patient_photo1 or not patient_photo2 or not patient_photo3 or not patient_photo4:
+                return Response({'status': 'fail', 'message': 'Please Choose a Patient Photo'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            create_directory = patient_id
+            directory = '/home/gokul/Desktop/Photos'
+            path = os.path.join(directory, create_directory)
+            try:
+                os.mkdir(path)
+            except OSError as error:
+                print(error)
+            for i in list(data):
+                print(type(i))
+                # if i == patient_photo or patient_photo2 or patient_photo3 or patient_photo4 or patient_photo1:
+                    # pil_img = Image.open(patient_photo)
+                    # np_img = np.array(pil_img)
+                    # img = cv2.cvtColor(np_img, cv2.COLOR_RGB2BGR)
+                    # cv2.imwrite(os.path.join(path, patient_photo.name),img)
+                    # pil_img = Image.open(i)
+                    # np_img = np.array(pil_img)
+                    # img = cv2.cvtColor(np_img, cv2.COLOR_RGB2BGR)
+                    # cv2.imwrite(os.path.join(path, i.name),img)
+
+            return Response({'status': 'success', 'message': 'Photo Stored Successfully'})
+
+        except Exception as e:
+            logger.exception('Exception {}'.format(e.args))
+            return Response({'status': 'fail', 'message': 'Something went wrong. Please try again later'},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
