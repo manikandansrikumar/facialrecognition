@@ -16,9 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from Faceapp.views import FaceRecognitionView
+from Faceapp.views import FaceRecognitionView, SavePhotoView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('detect/face/',FaceRecognitionView.as_view())
+    path('detect/face/',FaceRecognitionView.as_view()),
+    path('save/photo/',SavePhotoView.as_view()),
 ]
