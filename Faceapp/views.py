@@ -32,7 +32,7 @@ class FaceRecognitionView(generics.GenericAPIView):
                 all_face_encodings = pickle.load(f)
 
             unknown_image = face_recognition.load_image_file(patient_photo)
-            print("unknown_image ",unknown_image)
+
             if not face_recognition.face_encodings(unknown_image):
                 return Response({'status': 'fail', 'message': 'Cant Detect Face first'})
             # unknown_face_encoding = face_recognition.face_encodings(unknown_image)[0]
@@ -43,29 +43,23 @@ class FaceRecognitionView(generics.GenericAPIView):
                 for face in faces:
                     x,y,z,a = face['box']
                     detected_face = unknown_image[y:y+a,x:x+z]
-                print("detected_face first ",detected_face)
-            # print("detected_face second ",detected_face)
             except:
                 return Response({'status': 'fail', 'message': 'Cant Detect Face'})
             import numpy as np
             if np.array(detected_face).size == 0 or detected_face =='':
                 return Response({'status': 'fail', 'message': 'Cant Detect Face'})
-            # print("detected_face first ", detected_face)
-            # print("1234567890",detected_face)
             locations = face_recognition.face_locations(detected_face, model='cnn')
-            print(locations)
+
             if not locations:
                 return Response({'status': 'fail', 'message': 'Cant Detect Face second'})
             encodings = face_recognition.face_encodings(detected_face, locations)
-            print("encodings",encodings)
+
             face_names = list(all_face_encodings.keys())
             face_encodings = np.array(list(all_face_encodings.values()))
             for face_encoding, face_location in zip(encodings, locations):
                 results = face_recognition.compare_faces(face_encodings, face_encoding, 0.45)
                 match = None
                 if True in results:
-                    # print("all face encodings - ",face_encodings)
-                    # print("face encoding - ",face_encoding)
                     match = face_names[results.index(True)]
                     print(f"Match found : {match}")
                     return Response({'status': 'success', 'message': 'Face Recognised Successfully', 'data': match})
@@ -84,7 +78,6 @@ class SavePhotoView(generics.GenericAPIView):
     def post(self,request):
         try:
             data = request.data
-            print(data)
             logger.info('Request Payload {}'.format(data))
             patient_photo = data.get('patient_photo')
             patient_photo1 = data.get('patient_photo1')
@@ -106,17 +99,31 @@ class SavePhotoView(generics.GenericAPIView):
                 os.mkdir(path)
             except OSError as error:
                 print(error)
-            for i in list(data):
-                print(type(i))
-                # if i == patient_photo or patient_photo2 or patient_photo3 or patient_photo4 or patient_photo1:
-                    # pil_img = Image.open(patient_photo)
-                    # np_img = np.array(pil_img)
-                    # img = cv2.cvtColor(np_img, cv2.COLOR_RGB2BGR)
-                    # cv2.imwrite(os.path.join(path, patient_photo.name),img)
-                    # pil_img = Image.open(i)
-                    # np_img = np.array(pil_img)
-                    # img = cv2.cvtColor(np_img, cv2.COLOR_RGB2BGR)
-                    # cv2.imwrite(os.path.join(path, i.name),img)
+            if patient_photo:
+                pil_img = Image.open(patient_photo)
+                np_img = np.array(pil_img)
+                img = cv2.cvtColor(np_img, cv2.COLOR_RGB2BGR)
+                cv2.imwrite(os.path.join(path, patient_photo.name), img)
+            if patient_photo1:
+                pil_img = Image.open(patient_photo1)
+                np_img = np.array(pil_img)
+                img = cv2.cvtColor(np_img, cv2.COLOR_RGB2BGR)
+                cv2.imwrite(os.path.join(path, patient_photo1.name), img)
+            if patient_photo2:
+                pil_img = Image.open(patient_photo2)
+                np_img = np.array(pil_img)
+                img = cv2.cvtColor(np_img, cv2.COLOR_RGB2BGR)
+                cv2.imwrite(os.path.join(path, patient_photo2.name), img)
+            if patient_photo3:
+                pil_img = Image.open(patient_photo3)
+                np_img = np.array(pil_img)
+                img = cv2.cvtColor(np_img, cv2.COLOR_RGB2BGR)
+                cv2.imwrite(os.path.join(path, patient_photo3.name), img)
+            if patient_photo4:
+                pil_img = Image.open(patient_photo4)
+                np_img = np.array(pil_img)
+                img = cv2.cvtColor(np_img, cv2.COLOR_RGB2BGR)
+                cv2.imwrite(os.path.join(path, patient_photo4.name), img)
 
             return Response({'status': 'success', 'message': 'Photo Stored Successfully'})
 
