@@ -27,8 +27,8 @@ class FaceRecognitionView(generics.GenericAPIView):
             if not patient_photo:
                 return Response({'status': 'fail', 'message': 'Please Choose a Patient Photo'},
                                 status=status.HTTP_400_BAD_REQUEST)
-
-            with open('/home/gokul/dataset_faces.dat', 'rb') as f:
+            known_face_directory = 'media/photos'
+            with open('/home/gokul/Documents/FaceRecognition/dataset_faces.dat', 'rb') as f:
                 all_face_encodings = pickle.load(f)
 
             unknown_image = face_recognition.load_image_file(patient_photo)
@@ -62,6 +62,13 @@ class FaceRecognitionView(generics.GenericAPIView):
                 if True in results:
                     match = face_names[results.index(True)]
                     print(f"Match found : {match}")
+                    # add images to existing folder
+                    pil_img = Image.open(patient_photo)
+                    np_img = np.array(pil_img)
+                    img = cv2.cvtColor(np_img, cv2.COLOR_RGB2BGR)
+                    path = os.path.join(known_face_directory,match)
+                    cv2.imwrite(os.path.join(path, patient_photo.name), img)
+
                     return Response({'status': 'success', 'message': 'Face Recognised Successfully', 'data': match})
                 else:
                     print("Match Not Found")
@@ -93,12 +100,14 @@ class SavePhotoView(generics.GenericAPIView):
                 return Response({'status': 'fail', 'message': 'Please Choose a Patient Photo'},
                                 status=status.HTTP_400_BAD_REQUEST)
             create_directory = patient_id
-            directory = '/home/gokul/Desktop/Photos'
+            directory = 'media/photos'
             path = os.path.join(directory, create_directory)
             try:
                 os.mkdir(path)
             except OSError as error:
+                print("test values in Django")
                 print(error)
+                return Response({'status': 'fail', 'message': "File not Found"})
             if patient_photo:
                 pil_img = Image.open(patient_photo)
                 np_img = np.array(pil_img)

@@ -1,4 +1,9 @@
-KNOWN_FACES_DIR = '/home/gokul/Documents/image-detection/known_faces/'
+import environ
+
+env = environ.Env()
+env.read_env('.env')
+
+KNOWN_FACES_DIR = env('KNOWN_FACES_DIRECTORY')
 all_face_encodings = {}
 import os
 import face_recognition
