@@ -106,8 +106,9 @@ class SavePhotoView(generics.GenericAPIView):
             try:
                 os.mkdir(path)
             except OSError as error:
-                logger.exception('os error {}'.format(error.args))
-                return Response({'status': 'fail', 'message': "File not Found"})
+                pass
+                # logger.exception('os error {}'.format(error.args))
+                # return Response({'status': 'fail', 'message': "File not Found"})
             if patient_photo:
                 pil_img = Image.open(patient_photo)
                 np_img = np.array(pil_img)
