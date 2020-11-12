@@ -1,3 +1,4 @@
 face-reg/
 .idea/
 FaceRecognition/__pycache__/
+.env
