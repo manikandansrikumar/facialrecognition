@@ -13,6 +13,8 @@ import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+from django.conf import settings
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -112,6 +114,56 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+DATA_SET_PATH = os.path.join(BASE_DIR, 'dataset_faces.dat')
+KNOWN_FACE_DIRECTORY = os.path.join(BASE_DIR, 'media/photos')
+LOG_FILE_PATH = 'face_recognition.log'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'request_id': {
+            '()': 'log_request_id.filters.RequestIDFilter'
+        }
+    },
+    'formatters': {
+        'standard': {
+            'format': '[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] [%(request_id)s] %(message)s'
+        },
+    },
+    'handlers': {
+        'logfile': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filters': ['request_id'],
+            'filename':LOG_FILE_PATH,
+            'formatter': 'standard',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'filters': ['request_id'],
+            'formatter': 'standard',
+        },
+    },
+    'root': {
+        'handlers': ['logfile'],
+        'level': 'DEBUG'
+    },
+    'loggers': {
+        'recruitment': {
+            'handlers': ['logfile'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    }
+}
+
+LOG_REQUESTS = True
+LOG_REQUEST_ID_HEADER = "HTTP_X_REQUEST_ID"
+GENERATE_REQUEST_ID_IF_NOT_IN_HEADER = True
+REQUEST_ID_RESPONSE_HEADER = "HTTP_X_REQUEST_ID"
 
 
 # Static files (CSS, JavaScript, Images)

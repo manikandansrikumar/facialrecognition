@@ -1,9 +1,6 @@
-import environ
+from django.conf import settings
 
-env = environ.Env()
-env.read_env('.env')
-
-KNOWN_FACES_DIR = env('KNOWN_FACES_DIRECTORY')
+KNOWN_FACES_DIR = settings.KNOWN_FACE_DIRECTORY
 all_face_encodings = {}
 import os
 import face_recognition

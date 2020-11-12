@@ -28,3 +28,4 @@ scikit-build==0.11.1
 scipy==1.5.3
 six==1.15.0
 sqlparse==0.4.1
+django-log-request-id==1.6.0

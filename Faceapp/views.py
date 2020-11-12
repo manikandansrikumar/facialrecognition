@@ -6,6 +6,7 @@ import face_recognition
 import numpy as np
 from PIL import Image
 import cv2
+from django.conf import settings
 from django.shortcuts import render
 from mtcnn.mtcnn import MTCNN
 # Create your views here.
@@ -28,7 +29,7 @@ class FaceRecognitionView(generics.GenericAPIView):
                 return Response({'status': 'fail', 'message': 'Please Choose a Patient Photo'},
                                 status=status.HTTP_400_BAD_REQUEST)
             known_face_directory = 'media/photos'
-            with open('/home/gokul/Documents/FaceRecognition/dataset_faces.dat', 'rb') as f:
+            with open(settings.DATA_SET_PATH, 'rb') as f:
                 all_face_encodings = pickle.load(f)
 
             unknown_image = face_recognition.load_image_file(patient_photo)
