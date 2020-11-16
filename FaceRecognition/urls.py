@@ -19,9 +19,11 @@ from django.contrib import admin
 from django.urls import path
 
 from Faceapp.views import FaceRecognitionView, SavePhotoView
+from webcam_face_recognize import RealTimeFaceRecognition
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('detect/face/',FaceRecognitionView.as_view()),
     path('save/photo/',SavePhotoView.as_view()),
+    path('video/',RealTimeFaceRecognition.as_view())
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
