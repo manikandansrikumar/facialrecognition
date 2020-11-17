@@ -1,4 +1,6 @@
+import os
 import random
+import shutil
 
 import face_recognition
 import cv2
@@ -9,13 +11,21 @@ import pickle
 # Get a reference to webcam #0 (the default one)
 from rest_framework import generics, status
 from rest_framework.response import Response
+from FaceRecognition.settings import KNOWN_FACE_DIRECTORY
 
 
 class RealTimeFaceRecognition(generics.GenericAPIView):
     def post(self,request):
         try:
+            # Create if there is no cropped face directory
+            dirFace = 'media/cropped_face'
+            if not os.path.exists(dirFace):
+                os.mkdir(dirFace)
+                print("Directory ", dirFace, " Created ")
+            else:
+                print("Directory ", dirFace, " has found.")
 
-            video_capture = cv2.VideoCapture(2)
+            video_capture = cv2.VideoCapture(0)
 
 
             with open('/home/gokul/Documents/FaceRecognition/dataset_faces.dat', 'rb') as f:
@@ -59,17 +69,14 @@ class RealTimeFaceRecognition(generics.GenericAPIView):
                         # Or instead, use the known face with the smallest distance to the new face
                         face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
                         best_match_index = np.argmin(face_distances)
+                        print(best_match_index)
                         if matches[best_match_index]:
                             name = known_face_names[best_match_index]
-
-
-                            if dictionary[match] == False:
-                                randomnum = random.randint(0, 10000)
-                                FaceFileName = "media/cropped_face/" + str(match) + "_" + str(
-                                    randomnum) + ".jpg"  # folder path and random name image
-                                cv2.imwrite(FaceFileName, image)
-                                print('Face saved')
-                                dictionary[match] = True
+                            # Save Photo to Cropped Face Folder
+                            FaceFileName = "media/cropped_face/" + str(name) + ".jpg"  # folder path and random name image
+                            cv2.imwrite(FaceFileName, frame)
+                            print('Face saved')
+                                # dictionary[match] = True
 
                         face_names.append(name)
 
@@ -98,10 +105,19 @@ class RealTimeFaceRecognition(generics.GenericAPIView):
                 # Hit 'q' on the keyboard to quit!
                 if cv2.waitKey(1) & 0xFF == ord('q'):
                     break
-
             # Release handle to the webcam
             video_capture.release()
             cv2.destroyAllWindows()
+
+            # save photo to certain folder
+            for filename in os.listdir(dirFace):
+                image = cv2.imread(f"{dirFace}/{filename}")
+                match = filename.split('.')[0]
+                path = os.path.join(KNOWN_FACE_DIRECTORY, match)
+                randomnum = random.randint(0, 100)
+                cv2.imwrite(f"{path}/{match}{randomnum}.jpg",image)
+            # Remove all photos inside cropped face
+            shutil.rmtree('media/cropped_face/')
             return Response({'status': 'success', 'message': 'Face Detected Successfully'})
 
         except Exception as e:
