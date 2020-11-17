@@ -14,6 +14,7 @@ from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 
 # from Faceapp.utils import check_face
+from FaceRecognition.settings import KNOWN_FACE_DIRECTORY
 
 logger = logging.getLogger(__name__)
 
@@ -28,14 +29,14 @@ class FaceRecognitionView(generics.GenericAPIView):
             if not patient_photo:
                 return Response({'status': 'fail', 'message': 'Please Choose a Patient Photo'},
                                 status=status.HTTP_400_BAD_REQUEST)
-            known_face_directory = 'media/photos'
+            known_face_directory = KNOWN_FACE_DIRECTORY
             with open(settings.DATA_SET_PATH, 'rb') as f:
                 all_face_encodings = pickle.load(f)
 
             unknown_image = face_recognition.load_image_file(patient_photo)
 
             if not face_recognition.face_encodings(unknown_image):
-                return Response({'status': 'fail', 'message': 'Cant Detect Face first'})
+                return Response({'status': 'fail', 'message': 'Cant Detect Face'},status=status.HTTP_400_BAD_REQUEST)
             # unknown_face_encoding = face_recognition.face_encodings(unknown_image)[0]
             mtcnn = MTCNN()
             detected_face = ''
@@ -45,14 +46,14 @@ class FaceRecognitionView(generics.GenericAPIView):
                     x,y,z,a = face['box']
                     detected_face = unknown_image[y:y+a,x:x+z]
             except:
-                return Response({'status': 'fail', 'message': 'Cant Detect Face'})
-            import numpy as np
+                return Response({'status': 'fail', 'message': 'Cant Detect Face'},status=status.HTTP_400_BAD_REQUEST)
+            # import numpy as np
             if np.array(detected_face).size == 0 or detected_face =='':
-                return Response({'status': 'fail', 'message': 'Cant Detect Face'})
+                return Response({'status': 'fail', 'message': 'Cant Detect Face'},status=status.HTTP_400_BAD_REQUEST)
             locations = face_recognition.face_locations(detected_face, model='cnn')
 
             if not locations:
-                return Response({'status': 'fail', 'message': 'Cant Detect Face second'})
+                return Response({'status': 'fail', 'message': 'Cant Detect Face second'},status=status.HTTP_400_BAD_REQUEST)
             encodings = face_recognition.face_encodings(detected_face, locations)
 
             face_names = list(all_face_encodings.keys())
@@ -73,7 +74,7 @@ class FaceRecognitionView(generics.GenericAPIView):
                     return Response({'status': 'success', 'message': 'Face Recognised Successfully', 'data': match})
                 else:
                     print("Match Not Found")
-                    return Response({'status': 'success', 'message': 'Face Recognised Successfully', 'data': "Match Not Found"})
+                    return Response({'status': 'fail', 'message': 'Match Not Found'},status=status.HTTP_400_BAD_REQUEST)
 
         except Exception as e:
             logger.exception('Exception {}'.format(e.args))
@@ -101,7 +102,7 @@ class SavePhotoView(generics.GenericAPIView):
                 return Response({'status': 'fail', 'message': 'Please Choose a Patient Photo'},
                                 status=status.HTTP_400_BAD_REQUEST)
             create_directory = patient_id
-            directory = 'media/photos'
+            directory = settings.KNOWN_FACE_DIRECTORY
             path = os.path.join(directory, create_directory)
             try:
                 os.mkdir(path)
@@ -109,31 +110,14 @@ class SavePhotoView(generics.GenericAPIView):
                 pass
                 # logger.exception('os error {}'.format(error.args))
                 # return Response({'status': 'fail', 'message': "File not Found"})
-            if patient_photo:
-                pil_img = Image.open(patient_photo)
-                np_img = np.array(pil_img)
-                img = cv2.cvtColor(np_img, cv2.COLOR_RGB2BGR)
-                cv2.imwrite(os.path.join(path, patient_photo.name), img)
-            if patient_photo1:
-                pil_img = Image.open(patient_photo1)
-                np_img = np.array(pil_img)
-                img = cv2.cvtColor(np_img, cv2.COLOR_RGB2BGR)
-                cv2.imwrite(os.path.join(path, patient_photo1.name), img)
-            if patient_photo2:
-                pil_img = Image.open(patient_photo2)
-                np_img = np.array(pil_img)
-                img = cv2.cvtColor(np_img, cv2.COLOR_RGB2BGR)
-                cv2.imwrite(os.path.join(path, patient_photo2.name), img)
-            if patient_photo3:
-                pil_img = Image.open(patient_photo3)
-                np_img = np.array(pil_img)
-                img = cv2.cvtColor(np_img, cv2.COLOR_RGB2BGR)
-                cv2.imwrite(os.path.join(path, patient_photo3.name), img)
-            if patient_photo4:
-                pil_img = Image.open(patient_photo4)
-                np_img = np.array(pil_img)
-                img = cv2.cvtColor(np_img, cv2.COLOR_RGB2BGR)
-                cv2.imwrite(os.path.join(path, patient_photo4.name), img)
+            for photo in data.values():
+                if patient_id == photo:
+                    pass
+                else:
+                    pil_img = Image.open(photo)
+                    np_img = np.array(pil_img)
+                    img = cv2.cvtColor(np_img, cv2.COLOR_RGB2BGR)
+                    cv2.imwrite(os.path.join(path, photo.name), img)
 
             return Response({'status': 'success', 'message': 'Photo Stored Successfully'})
 
