@@ -19,8 +19,6 @@ from FaceRecognition.settings import KNOWN_FACE_DIRECTORY
 logger = logging.getLogger(__name__)
 
 class FaceRecognitionView(generics.GenericAPIView):
-    permission_classes = (permissions.AllowAny,)
-    authentication_classes = []
     def post(self,request):
         try:
             data = request.data
@@ -82,8 +80,6 @@ class FaceRecognitionView(generics.GenericAPIView):
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class SavePhotoView(generics.GenericAPIView):
-    permission_classes = (permissions.AllowAny,)
-    authentication_classes = []
     def post(self,request):
         try:
             data = request.data
