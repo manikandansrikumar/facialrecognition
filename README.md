@@ -6,3 +6,5 @@
 
 3. Tensorflow - https://pypi.org/project/tensorflow/
 
+4. Face Recognition Using Webcam - https://github.com/ageitgey/face_recognition/blob/master/examples/facerec_from_webcam_faster.py
+
