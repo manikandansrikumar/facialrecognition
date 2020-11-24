@@ -1,6 +1,8 @@
 import logging
 import os
 import pickle
+import random
+import string
 
 import face_recognition
 import numpy as np
@@ -113,7 +115,9 @@ class SavePhotoView(generics.GenericAPIView):
                     pil_img = Image.open(photo)
                     np_img = np.array(pil_img)
                     img = cv2.cvtColor(np_img, cv2.COLOR_RGB2BGR)
-                    cv2.imwrite(os.path.join(path, photo.name), img)
+                    photo_name = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5)) + '.jpg'
+
+                    cv2.imwrite(os.path.join(path, photo_name), img)
 
             return Response({'status': 'success', 'message': 'Photo Stored Successfully'})
 
