@@ -69,7 +69,8 @@ class FaceRecognitionView(generics.GenericAPIView):
                     np_img = np.array(pil_img)
                     img = cv2.cvtColor(np_img, cv2.COLOR_RGB2BGR)
                     path = os.path.join(known_face_directory,match)
-                    cv2.imwrite(os.path.join(path, patient_photo.name), img)
+                    photo_name = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6)) + '.jpg'
+                    cv2.imwrite(os.path.join(path, photo_name), img)
 
                     return Response({'status': 'success', 'message': 'Face Recognised Successfully', 'data': match})
                 else:
